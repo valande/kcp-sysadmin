@@ -16,7 +16,7 @@ export lvname="elasticsearch"
 export mountdir="/var/lib/elasticsearch"
 export mapper="/dev/mapper/${vgname}-${lvname}"
 
-# Run storage provisioning script
+# Run storage provisioning scripts
 bash /vagrant/provision/common/storage.sh
 
 # Run software provisioning scripts

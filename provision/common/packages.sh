@@ -8,3 +8,5 @@
 # Update repos
 apt update -y
 
+# Install nginx
+apt install -y nginx
