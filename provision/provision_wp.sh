@@ -2,7 +2,7 @@
 #:
 #: provision_wp.sh  [ valande@gmail.com ]
 #: --------------------------------------------------------
-#: Provisioning script for Wordpress stack VM "kc-wordpress"
+#: Provisioning script for Wordpress
 #:
 
 # Storage definitions & tunning
@@ -16,5 +16,9 @@ export lvname="mysql"
 export mountdir="/var/lib/mysql"
 export mapper="/dev/mapper/${vgname}-${lvname}"
 
-# Run storage provisioning script
+# Run storage provisioning scripts
 bash /vagrant/provision/common/storage.sh
+
+# Run software provisioning scripts
+bash /vagrant/provision/common/packages.sh
+bash /vagrant/provision/wp/packages.sh

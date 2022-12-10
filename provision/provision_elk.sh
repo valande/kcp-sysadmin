@@ -2,10 +2,10 @@
 #:
 #: provision_elk.sh  [ valande@gmail.com ]
 #: --------------------------------------------------------
-#: Provisioning script for ELK stack VM "kc-elk"
+#: Provisioning script for ELK
 #:
 
-# Storage provisioning vars
+# Storage definitions & tunning
 export partname="extrahd"
 export partoffset=2
 export partsize="4GB"
@@ -16,5 +16,9 @@ export lvname="elasticsearch"
 export mountdir="/var/lib/elasticsearch"
 export mapper="/dev/mapper/${vgname}-${lvname}"
 
-# Storage provisioning script
+# Run storage provisioning script
 bash /vagrant/provision/common/storage.sh
+
+# Run software provisioning scripts
+bash /vagrant/provision/common/packages.sh
+bash /vagrant/provision/elk/packages.sh
