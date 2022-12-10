@@ -20,5 +20,5 @@ export mapper="/dev/mapper/${vgname}-${lvname}"
 bash /vagrant/provision/common/storage.sh
 
 # Run software provisioning scripts
-bash /vagrant/provision/common/packages.sh
-bash /vagrant/provision/elk/packages.sh
+bash /vagrant/provision/common/pkginstall.sh
+bash /vagrant/provision/elk/pkginstall.sh
