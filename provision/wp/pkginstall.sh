@@ -71,4 +71,7 @@ apt install -y filebeat
 filebeat modules enable system
 filebeat modules enable nginx
 
+# TODO: Edit filebeat config on /etc/filebeat/filebeat.yml
+# systemctl enable filebeat --now
 
+systemctl restart nginx
