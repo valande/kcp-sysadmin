@@ -8,7 +8,7 @@
 # Storage definitions & tunning
 export partname="extrahd"
 export partoffset=2
-export partsize="4GB"
+export partsize="2GB"
 export device="/dev/sdc"
 export pvname="/dev/sdc1"
 export vgname="extra"
