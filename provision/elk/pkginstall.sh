@@ -5,19 +5,14 @@
 #: Software provisioning script for ELK VM
 #:
 
-# Install Java dependencies
+# Java dependencies
 apt install -y default-jre
 
 
-# Add  and enable elastic repo
-wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-apt-get install apt-transport-https
-echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-8.x.list
-apt update -y
+# Logstash
+if ! apt list --installed | grep -q logstash; then
 
-
-# Install and configure logstash
-apt install logstash -y
+apt install -y logstash
 
 # Input config
 cat << EOF > /etc/logstash/conf.d/02-beats-input.conf
@@ -81,16 +76,21 @@ EOF
 
 # Enable logstash service
 systemctl enable logstash --now
+fi
 
 
 # Install elasticsearch
-apt install elasticsearch -y
-chown elasticsearch /var/lib/elasticsearch
-systemctl enable elasticsearch --now
+if ! apt list --installed | grep -q elasticsearch; then
+    apt install -y elasticsearch
+    chown elasticsearch /var/lib/elasticsearch
+    systemctl enable elasticsearch --now
+fi
 
 
 # Install kibana
-apt install kibana -y 
+if ! apt list --installed | grep -q kibana; then
+
+apt install -y kibana 
 
 # Configure kibana via nginx 
 cat << EOF > /etc/nginx/sites-available/default
@@ -114,9 +114,10 @@ server {
 }
 EOF
 
-# Basic auth for kibana
-if ! grep -q kibanaadmin /etc/nginx/htpasswd.users; then
-    echo "kibanaadmin:$(openssl passwd -apr1 -in /vagrant/.kibana)" | tee -a /etc/nginx/htpasswd.users
+    # Basic auth for kibana
+    if ! grep -q kibanaadmin /etc/nginx/htpasswd.users; then
+        echo "kibanaadmin:$(openssl passwd -apr1 -in /vagrant/.kibana)" | tee -a /etc/nginx/htpasswd.users
+    fi
 fi
 
 # Start / enable nginx and kibana services
