@@ -3,3 +3,4 @@
 *.vmdk
 *.log
 .DS_Store
+tmp
