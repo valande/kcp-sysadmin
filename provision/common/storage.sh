@@ -7,9 +7,9 @@
 
 # Prepare disk partition, if needed
 if [ ! -b ${pvname} ]; then
-    parted -s ${device} mklabel gpt
-    parted -s ${device} mkpart ${partname} ${partoffset} ${partsize}
-    parted -s ${device} set 1 lvm on
+parted -s ${device} mklabel gpt
+parted -s ${device} mkpart ${partname} ${partoffset} ${partsize}
+parted -s ${device} set 1 lvm on
 fi
 
 # Create volume and make it an ext4 filesystem, if needed
@@ -25,10 +25,10 @@ mkdir -p ${mountdir}
 
 # Add fstab entry 
 if ! grep -q "${mountdir}.*ext4" /etc/fstab; then
-cat << EOF >> /etc/fstab
+cat << _EOF_ >> /etc/fstab
 # ${lvname} volume
 ${mapper} ${mountdir} ext4 defaults,auto,nofail 0 0
-EOF
+_EOF_
 fi
 
 # Mount logical volume on 'mountdir'

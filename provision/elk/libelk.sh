@@ -1,30 +1,31 @@
 #!/bin/bash
 #:
-#: pkginstall.sh  [ valande@gmail.com ]
+#: libelk.sh  [ valande@gmail.com ]
 #: --------------------------------------------------------
-#: Software provisioning script for ELK VM
+#: Service provisioning function library
 #:
 
-# Java dependencies
+install_jre()
+{
 apt-get install -y default-jre
+}
 
 
-# Logstash
-if ! apt-get list --installed | grep -q logstash; then
-
+install_logstash()
+{
 apt-get install -y logstash
 
 # Input config
-cat << EOF > /etc/logstash/conf.d/02-beats-input.conf
+cat << _EOF_ > /etc/logstash/conf.d/02-beats-input.conf
 input {
     beats {
         port => 5044
     }
 }
-EOF
+_EOF_
 
 # Filter config
-cat << EOF > /etc/logstash/conf.d/10-syslog-filter.conf
+cat << _EOF_ > /etc/logstash/conf.d/10-syslog-filter.conf
 filter {
   if [fileset][module] == "system" {
     if [fileset][name] == "auth" {
@@ -61,10 +62,10 @@ filter {
     }
   }
 }
-EOF
+_EOF_
 
 # Output config
-cat << EOF > /etc/logstash/conf.d/30-elasticsearch-output.conf
+cat << _EOF_ > /etc/logstash/conf.d/30-elasticsearch-output.conf
 output {
     elasticsearch {
         hosts => [ "localhost:9200" ]
@@ -72,25 +73,23 @@ output {
         index "%{[@metadata][beat]}-%{[@metadata][version]}-{+YYYY.MM.dd}"
     }
 }
-EOF
-
-fi
-
-
-# Install elasticsearch
-if ! apt-get list --installed | grep -q elasticsearch; then
-    apt-get install -y elasticsearch
-    chown elasticsearch:elasticsearch /var/lib/elasticsearch
-fi
+_EOF_
+}
 
 
-# Install kibana
-if ! apt-get list --installed | grep -q kibana; then
+install_elasticsearch()
+{
+apt-get install -y elasticsearch
+chown elasticsearch:elasticsearch /var/lib/elasticsearch
+}
 
+
+install_kibana()
+{
 apt-get install -y kibana 
 
 # Configure kibana via nginx 
-cat << EOF > /etc/nginx/sites-available/default
+cat << _EOF_ > /etc/nginx/sites-available/default
 # Managed by installation script - Do not change
 server {
     listen 80;
@@ -109,20 +108,10 @@ server {
         proxy_cache_bypass \$http_upgrade;
     }
 }
-EOF
+_EOF_
 
 # Basic auth for kibana
 if ! grep -q kibanaadmin /etc/nginx/htpasswd.users; then
     echo "kibanaadmin:$(openssl passwd -apr1 -in /vagrant/.kibana)" | tee -a /etc/nginx/htpasswd.users
 fi
-
-fi
-
-
-
-# Run services
-systemctl daemon-reload
-systemctl enable logstash --now
-systemctl enable elasticsearch --now
-systemctl enable kibana --now
-systemctl restart nginx
+}
