@@ -19,10 +19,10 @@ filebeat.inputs:
 # Below are the input specific configurations.
 
 # filestream is an input for collecting log messages from files.
-- type: log
+- type: filestream
 
   # Unique ID among all inputs, an ID is required.
-  id: my-filestream-id
+  id: filebeat-id
 
   # Change to true to enable this input configuration.
   enabled: true
@@ -103,7 +103,7 @@ setup.template.settings:
 
 # Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
 # This requires a Kibana endpoint configuration.
-setup.kibana:
+#setup.kibana:
 
   # Kibana Host
   # Scheme and port can be left out and will be set to the default (http and 5601)
