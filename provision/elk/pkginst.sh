@@ -17,5 +17,5 @@ install_kibana                  # Kibana
 
 # -- Run services
 systemctl daemon-reload             
-enable_services logstash elasticsearch kibana nginx
-restart_service nginx
+enable_services "logstash" "elasticsearch" "kibana" "nginx"
+restart_service "nginx"

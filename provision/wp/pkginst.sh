@@ -17,5 +17,6 @@ install_wordpress           # Wordpress
 install_filebeat            # Filebeat
 
 # -- Run services
-enable_services "mariadb" "php7.4-fpm" "filebeat"
+start_services "mariadb" "php7.4-fpm" "filebeat"
+enable_services "mariadb" "php7.4-fpm" "filebeat" "nginx"
 restart_service "nginx"
