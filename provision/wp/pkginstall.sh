@@ -40,8 +40,22 @@ rm -f /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/wordpress /etc/nginx/sites-enabled/default
 
 
-# Configure MariaDB
+# MariaDB first step
 mysql_install_db --datadir=/var/lib/mysql --user=mysql
+
+
+# Protect MariaDB Installation
+myql --user=root << EOF
+UPDATE mysql.user SET Password=PASSWORD('${db_root_password}') WHERE User='root';
+DELETE FROM mysql.user WHERE User='';
+DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+DROP DATABASE IF EXISTS test;
+DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+FLUSH PRIVILEGES;
+EOF
+
+
+# Create Wordpress database
 cat << EOF > /tmp/wordpress.sql
 CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 GRANT ALL ON wordpress.* TO 'wpuser'@'localhost' IDENTIFIED BY 'valande';
@@ -52,26 +66,30 @@ rm /tmp/wordpress.sql
 
 
 # Install and configure Wordpress
-cd /var/www
-wget https://wordpress.org/latest.tar.gz
-tar xvzf latest.tar.gz && rm latest.tar.gz
-chown www-data:www-data /var/www/wordpress
-cd /var/www/wordpress
-cp wp-config-sample.php wp-config.php
-sed -i 's/database_name_here/wordpress/g' wp-config.php
-sed -i 's/username_here/wpuser/g' wp-config.php
-sed -i 's/password_here/valande/g' wp-config.php
+if [ ! -d /var/www/wordpress ]; then
+    cd /var/www
+    wget https://wordpress.org/latest.tar.gz
+    tar xvzf latest.tar.gz && rm latest.tar.gz
+    chown www-data:www-data /var/www/wordpress
+    cd /var/www/wordpress
+    cp wp-config-sample.php wp-config.php
+    sed -i 's/database_name_here/wordpress/g' wp-config.php
+    sed -i 's/username_here/wpuser/g' wp-config.php
+    sed -i 's/password_here/valande/g' wp-config.php
+fi
 
 
 # Install Filebeat and enable system and nginx modules
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
+apt-get install apt-transport-https
+echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-8.x.list
 apt update -y
 apt install -y filebeat
 filebeat modules enable system
 filebeat modules enable nginx
 
 # TODO: Edit filebeat config on /etc/filebeat/filebeat.yml
+
 # systemctl enable filebeat --now
 
 systemctl restart nginx
