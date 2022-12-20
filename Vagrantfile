@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
     elk.vm.hostname = "kc-elk"
     elk.vm.network  "private_network", ip: "192.168.100.4", netmask: "29", virtualbox__intnet: "sysadmtasknet", nic_type: "virtio"
     elk.vm.network "forwarded_port", guest: 80, host: 8081
-    elk.vm.network "forwarded_port", guest: 9200, host: 9200
+    elk.vm.network "forwarded_port", guest: 5044, host: 5044
     elk.vm.box_check_update = false
     elk.vm.provider "virtualbox" do |vbox|
       vbox.name = "elk"
