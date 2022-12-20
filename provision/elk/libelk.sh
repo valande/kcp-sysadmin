@@ -70,7 +70,7 @@ output {
     elasticsearch {
         hosts => [ "localhost:9200" ]
         manage_template => false
-        index "%{[@metadata][beat]}-%{[@metadata][version]}-{+YYYY.MM.dd}"
+        index => "%{[@metadata][beat]}-%{[@metadata][version]}-{+YYYY.MM.dd}"
     }
 }
 _EOF_
