@@ -19,20 +19,19 @@ filebeat.inputs:
 # Below are the input specific configurations.
 
 # filestream is an input for collecting log messages from files.
-- type: filestream
+- type: log
 
   # Unique ID among all inputs, an ID is required.
   id: my-filestream-id
 
   # Change to true to enable this input configuration.
-  enabled: false
+  enabled: true
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
     - /var/log/*.log
     - /var/log/nginx/*.log
-    - /var/log/mysql/*.log
-    
+    - /var/log/mysql/*.log    
     #- c:\programdata\elasticsearch\logs\*
 
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
@@ -150,7 +149,7 @@ setup.kibana:
 # ------------------------------ Logstash Output -------------------------------
 output.logstash:
   # The Logstash hosts
-  hosts: ["192.168.1.4:5044"]
+  hosts: ["192.168.100.4:5044"]
 
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
