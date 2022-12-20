@@ -6,13 +6,13 @@
 #:
 
 # Java dependencies
-apt install -y default-jre
+apt-get install -y default-jre
 
 
 # Logstash
-if ! apt list --installed | grep -q logstash; then
+if ! apt-get list --installed | grep -q logstash; then
 
-apt install -y logstash
+apt-get install -y logstash
 
 # Input config
 cat << EOF > /etc/logstash/conf.d/02-beats-input.conf
@@ -74,23 +74,20 @@ output {
 }
 EOF
 
-# Enable logstash service
-systemctl enable logstash --now
 fi
 
 
 # Install elasticsearch
-if ! apt list --installed | grep -q elasticsearch; then
-    apt install -y elasticsearch
-    chown elasticsearch /var/lib/elasticsearch
-    systemctl enable elasticsearch --now
+if ! apt-get list --installed | grep -q elasticsearch; then
+    apt-get install -y elasticsearch
+    chown elasticsearch:elasticsearch /var/lib/elasticsearch
 fi
 
 
 # Install kibana
-if ! apt list --installed | grep -q kibana; then
+if ! apt-get list --installed | grep -q kibana; then
 
-apt install -y kibana 
+apt-get install -y kibana 
 
 # Configure kibana via nginx 
 cat << EOF > /etc/nginx/sites-available/default
@@ -114,12 +111,18 @@ server {
 }
 EOF
 
-    # Basic auth for kibana
-    if ! grep -q kibanaadmin /etc/nginx/htpasswd.users; then
-        echo "kibanaadmin:$(openssl passwd -apr1 -in /vagrant/.kibana)" | tee -a /etc/nginx/htpasswd.users
-    fi
+# Basic auth for kibana
+if ! grep -q kibanaadmin /etc/nginx/htpasswd.users; then
+    echo "kibanaadmin:$(openssl passwd -apr1 -in /vagrant/.kibana)" | tee -a /etc/nginx/htpasswd.users
 fi
 
-# Start / enable nginx and kibana services
+fi
+
+
+
+# Run services
+systemctl daemon-reload
+systemctl enable logstash --now
+systemctl enable elasticsearch --now
 systemctl enable kibana --now
 systemctl restart nginx

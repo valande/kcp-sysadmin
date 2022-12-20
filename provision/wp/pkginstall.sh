@@ -12,7 +12,7 @@ dbpass=valande
 dbrootpass=keepcoding
 
 # Install MariaDB
-apt install -y mariadb-server
+apt-get install -y mariadb-server
 
 if [ ! -f /var/lib/mysql/.dbinstok ]; then
 
@@ -42,7 +42,7 @@ touch /var/lib/mysql/.mdbinstok
 fi
 
 # Install PHP dependencies
-apt install -y php-fpm php-mysql expect php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip
+apt-get install -y php-fpm php-mysql expect php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip
 
 # Configure nginx
 cat << EOF > /etc/nginx/sites-available/wordpress
@@ -86,12 +86,12 @@ fi
 
 
 # Install Filebeat and enable system and nginx modules
-apt install -y filebeat
+apt-get install -y filebeat
 filebeat modules enable system
 filebeat modules enable nginx
 
 # TODO: Edit filebeat config on /etc/filebeat/filebeat.yml
 
-
+# Run services
 systemctl enable filebeat --now
 systemctl restart nginx
