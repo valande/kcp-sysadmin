@@ -16,7 +16,7 @@ install_logstash()
 apt-get install -y logstash
 
 # Input config
-cat << _EOF_ > /etc/logstash/conf.d/02-beats-input.conf
+cat << _EOF_ > /etc/logstash/conf.d/10-beats-input.conf
 input {
     beats {
         port => 5044
@@ -25,7 +25,7 @@ input {
 _EOF_
 
 # Filter config
-cat << _EOF_ > /etc/logstash/conf.d/10-syslog-filter.conf
+cat << _EOF_ > /etc/logstash/conf.d/40-syslog-filter.conf
 filter {
   if [fileset][module] == "system" {
     if [fileset][name] == "auth" {
@@ -65,12 +65,12 @@ filter {
 _EOF_
 
 # Output config
-cat << _EOF_ > /etc/logstash/conf.d/30-elasticsearch-output.conf
+cat << _EOF_ > /etc/logstash/conf.d/70-elasticsearch-output.conf
 output {
     elasticsearch {
         hosts => [ "localhost:9200" ]
         manage_template => false
-        index => "%{[@metadata][beat]}-%{[@metadata][version]}-{+YYYY.MM.dd}"
+        index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
     }
 }
 _EOF_
@@ -111,7 +111,8 @@ server {
 _EOF_
 
 # Basic auth for kibana
+touch /etc/nginx/htpasswd.users
 if ! grep -q kibanaadmin /etc/nginx/htpasswd.users; then
-    echo "kibanaadmin:$(openssl passwd -apr1 -in /vagrant/.kibana)" | tee -a /etc/nginx/htpasswd.users
+    echo "kibanaadmin:$(openssl passwd -apr1 -in /vagrant/.kibana)" >> /etc/nginx/htpasswd.users
 fi
 }
