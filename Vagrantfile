@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
     elk.vm.box = "ubuntu/focal64"
     elk.vm.hostname = "kc-elk"
     elk.vm.network  "private_network", ip: "192.168.100.4", netmask: "29", virtualbox__intnet: "sysadmtasknet", nic_type: "virtio"
-    elk.vm.network "forwarded_port", guest: 80, host: 8081
+    elk.vm.network "forwarded_port", guest: 80, host: 8080
     elk.vm.network "forwarded_port", guest: 5044, host: 5044
     elk.vm.box_check_update = false
     elk.vm.provider "virtualbox" do |vbox|
@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
     wp.vm.box = "ubuntu/focal64"
     wp.vm.hostname = "kc-wordpress"
     wp.vm.network  "private_network", ip: "192.168.100.2", netmask: "29", virtualbox__intnet: "sysadmtasknet", nic_type: "virtio"
-    wp.vm.network "forwarded_port", guest: 80, host: 8080
+    wp.vm.network "forwarded_port", guest: 80, host: 8081
     wp.vm.box_check_update = false
     wp.vm.provider "virtualbox" do |vbox|
       vbox.name = "wp"
